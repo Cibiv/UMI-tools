@@ -181,9 +181,6 @@ def main(argv=None):
     infile = pysam.Samfile(in_name, in_mode)
     outfile = pysam.Samfile(out_name, out_mode, template=infile)
 
-    if options.paired:
-        outfile = umi_methods.TwoPassPairWriter(infile, outfile)
-
     nInput, nOutput, input_reads, output_reads = 0, 0, 0, 0
 
     if options.detection_method:
@@ -274,8 +271,10 @@ def main(argv=None):
                 bundle=bundle,
                 threshold=options.threshold)
 
-            for read in reads:
+            for read, read2 in reads:
                 outfile.write(read)
+                if (read2 is not None):
+                    outfile.write(read2)
                 nOutput += 1
 
             if options.stats:
@@ -286,7 +285,7 @@ def main(argv=None):
                     [bundle[UMI]['count'] for UMI in bundle])
 
                 # collect post-dudupe stats
-                post_cluster_umis = [bundle_iterator.barcode_getter(x)[0] for x in reads]
+                post_cluster_umis = [bundle_iterator.barcode_getter(r1)[0] for r1, r2 in reads]
                 stats_post_df_dict['UMI'].extend(umis)
                 stats_post_df_dict['counts'].extend(umi_counts)
 

@@ -226,6 +226,14 @@ dedup_single_gene_tag:
       references: [single_gene_tag.sam]
       options: dedup -L test.log --out-sam --random-seed=123456789 --method=directional --per-gene --gene-tag=XF --skip-tags-regex="^[__|Unassigned]"
 
+dedup_paired_contig:
+      skip_python: 3
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout]
+      references: [dedup_paired_contig.sam]
+      options: dedup -L test.log  --out-sam --random-seed=123456789 --method=directional --umi-separator="|" --paired
+
 group_directional_unmapped:
       skip_python: 3
       sort: True

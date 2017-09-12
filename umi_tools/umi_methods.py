@@ -1385,7 +1385,6 @@ class get_bundles:
                     self.read_events['Single end unmapped'] += 1
 
                 if self.return_unmapped:
-                    self.read_events['Input Reads'] += 1
                     yield read, None, "single_read"
                 continue
 

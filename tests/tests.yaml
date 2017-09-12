@@ -106,6 +106,12 @@ count_tab_single:
       references: [count_tab.tsv]
       options: count_tab -L test.log
 
+count_paired_wide_contig:
+      stdin: paired_contig.bam
+      outputs: [stdout]
+      references: [count_paired_wide_contig.tsv]
+      options: count -L test.log  --random-seed=123456789 --method=directional --umi-separator="|" --paired --per-contig --wide-format-cell-counts
+
 # python 2 tests ##
 
 dedup_single_ignore:

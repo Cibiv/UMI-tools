@@ -1311,8 +1311,7 @@ class get_bundles:
                 continue
 
             if read.mate_is_unmapped and self.options.paired:
-                if not read.is_unmapped:
-                    self.read_events['Read 2 unmapped'] += 1
+                self.read_events['Read 2 unmapped'] += 1
                 if self.return_unmapped:
                     yield read, None, "single_read"
                 continue

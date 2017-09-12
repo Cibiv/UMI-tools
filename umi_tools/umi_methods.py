@@ -1484,7 +1484,13 @@ class get_bundles:
                 continue
 
             if self.options.paired:
-                self.read_events['Paired Reads'] += 1
+                if read2 is None:
+                    self.read_events['Improper Pairs'] += 1
+                    if self.return_unmapped:
+                        yield read, None, "single_read"
+                    continue
+                else:
+                    self.read_events['Paired Reads'] += 1
 
             if self.options.subset:
                 if random.random() >= self.options.subset:

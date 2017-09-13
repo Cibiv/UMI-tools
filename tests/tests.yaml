@@ -257,6 +257,14 @@ group_gene_tag:
       references: [group_dir_per_gene.tsv, group_dir_per_gene.sam]
       options: group -L test.log  --random-seed=123456789 --method=directional --gene-tag=XF --skip-tags-regex="^[__|Unassigned]" --group-out=group_dir_per_gene.tsv --output-bam --out-sam
 
+group_paired_contig:
+      skip_python: 3
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout, group_paired_contig.tsv]
+      references: [group_paired_contig.sam, group_paired_contig.tsv]
+      options: group -L test.log --random-seed=123456789 --umi-separator="|" --paired --output-bam --out-sam --group-out=group_paired_contig.tsv
+
 # End of python 2 tests ##
 
 # python 3 tests ##

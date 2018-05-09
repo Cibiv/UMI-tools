@@ -182,8 +182,10 @@ def main(argv=None):
     if options.tsv:
         mapping_outfile = U.openFile(options.tsv, "w")
         mapping_outfile.write("%s\n" % "\t".join(
-            ["read_id", "contig", "position", "gene", "umi", "umi_count",
-             "final_umi", "final_umi_count", "unique_id"]))
+            ["read_id", "contig", "position",
+             "gene", "umi", "umi_count",
+             "final_umi", "final_umi_count", "unique_id"] +
+            (["cell"] if options.per_cell else [])))
 
     nInput, nOutput, unique_id, input_reads, output_reads = 0, 0, 0, 0, 0
 
@@ -223,6 +225,8 @@ def main(argv=None):
             nOutput += 1
             continue
 
+        gene, cell = key
+
         umis = bundle.keys()
         counts = {umi: bundle[umi]["count"] for umi in umis}
 
@@ -261,20 +265,17 @@ def main(argv=None):
                         outfile.write(read)
 
                     if options.tsv:
-                        if options.per_gene:
-                            gene = read.get_tag(gene_tag)
-                        else:
-                            gene = "NA"
-                        mapping_outfile.write("%s\n" % "\t".join(map(str, (
+                        mapping_outfile.write("%s\n" % "\t".join(map(str, [
                             read.query_name, read.reference_name,
                             umi_methods.get_read_position(
                                 read, options.soft_clip_threshold)[1],
-                            gene,
+                            gene if options.per_gene else "NA",
                             umi.decode(),
                             counts[umi],
                             top_umi.decode(),
                             group_count,
-                            unique_id))))
+                            unique_id] +
+                            ([cell.decode()] if options.per_cell else []))))
 
                     nOutput += 1
 

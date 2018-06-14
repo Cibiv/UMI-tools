@@ -106,6 +106,12 @@ count_tab_single:
       references: [count_tab.tsv]
       options: count_tab -L test.log
 
+count_paired_wide_contig:
+      stdin: paired_contig.bam
+      outputs: [stdout]
+      references: [count_paired_wide_contig.tsv]
+      options: count -L test.log  --random-seed=123456789 --method=directional --umi-separator="|" --paired --per-contig --wide-format-cell-counts
+
 # python 2 tests ##
 
 dedup_single_ignore:
@@ -220,6 +226,14 @@ dedup_single_gene_tag:
       references: [single_gene_tag.sam]
       options: dedup -L test.log --out-sam --random-seed=123456789 --method=directional --per-gene --gene-tag=XF --skip-tags-regex="^[__|Unassigned]"
 
+dedup_paired_contig:
+      skip_python: 3
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout]
+      references: [dedup_paired_contig.sam]
+      options: dedup -L test.log  --out-sam --random-seed=123456789 --method=directional --umi-separator="|" --paired
+
 group_directional_unmapped:
       skip_python: 3
       sort: True
@@ -242,6 +256,14 @@ group_gene_tag:
       outputs: [group_dir_per_gene.tsv, stdout]
       references: [group_dir_per_gene.tsv, group_dir_per_gene.sam]
       options: group -L test.log  --random-seed=123456789 --method=directional --gene-tag=XF --skip-tags-regex="^[__|Unassigned]" --group-out=group_dir_per_gene.tsv --output-bam --out-sam
+
+group_paired_contig:
+      skip_python: 3
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout, group_paired_contig.tsv]
+      references: [group_paired_contig.sam, group_paired_contig.tsv]
+      options: group -L test.log --random-seed=123456789 --umi-separator="|" --paired --output-bam --out-sam --group-out=group_paired_contig.tsv
 
 # End of python 2 tests ##
 
@@ -352,6 +374,14 @@ dedup_single_gene_tag_py3:
       references: [single_gene_tag_py3.sam]
       options: dedup -L test.log --out-sam --random-seed=123456789 --method=directional --per-gene --gene-tag=XF --skip-tags-regex="^[__|Unassigned]"
 
+dedup_paired_contig_py3:
+      skip_python: 2
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout]
+      references: [dedup_paired_contig_py3.sam]
+      options: dedup -L test.log  --out-sam --random-seed=123456789 --method=directional --umi-separator="|" --paired
+
 group_gene_tag:
       skip_python: 2
       sort: True
@@ -417,6 +447,14 @@ group_unsorted_py3:
       outputs: [stdout]
       references: [group_unsorted_py3.sam]
       options: group -L test.log --out-sam --random-seed=123456789 --method=directional --no-sort-output --output-bam
+
+group_paired_contig_py3:
+      skip_python: 2
+      sort: True
+      stdin: paired_contig.bam
+      outputs: [stdout, group_paired_contig_py3.tsv]
+      references: [group_paired_contig_py3.sam, group_paired_contig_py3.tsv]
+      options: group -L test.log --random-seed=123456789 --umi-separator="|" --paired --output-bam --out-sam --group-out=group_paired_contig_py3.tsv
 
 
 ## End of python 3 tests ##

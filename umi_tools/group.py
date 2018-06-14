@@ -184,8 +184,9 @@ def main(argv=None):
         mapping_outfile.write("%s\n" % "\t".join(
             ["read_id", "contig", "position"] +
             (["position2"] if options.paired else []) +
-            ["gene", "umi", "umi_count", "final_umi", "final_umi_count",
-             "unique_id"]))
+            ["gene", "umi", "umi_count", "final_umi",
+             "final_umi_count", "unique_id"] +
+            (["cell"] if options.per_cell else [])))
 
     nInput, nOutput, unique_id, input_reads, output_reads = 0, 0, 0, 0, 0
 
@@ -224,6 +225,8 @@ def main(argv=None):
 
             nOutput += 1
             continue
+
+        gene, cell = key
 
         umis = bundle.keys()
         counts = {umi: bundle[umi]["count"] for umi in umis}
@@ -268,25 +271,20 @@ def main(argv=None):
                             outfile.write(read2)
 
                     if options.tsv:
-                        if options.per_gene:
-                            # XXX: What if the two reads disagree?
-                            gene = read.get_tag(gene_tag)
-                        else:
-                            gene = "NA"
                         pos = umi_methods.get_read_position(
                             read, options.soft_clip_threshold)[1]
                         pos2 = umi_methods.get_read_position(
                             read2, options.soft_clip_threshold)[1] if read2 is not None else ""
-                        mapping_outfile.write("%s\n" % "\t".join(map(str, [
-                            read.query_name, read.reference_name,
-                            pos] +
-                            ([pos2] if options.paired else []) + [
-                            gene,
-                            umi.decode(),
-                            counts[umi],
-                            top_umi.decode(),
-                            group_count,
-                            unique_id])))
+                        mapping_outfile.write("%s\n" % "\t".join(map(str, (
+                            [read.query_name, read.reference_name, pos] +
+                            ([pos2] if options.paired else []) +
+                            [gene if options.per_gene else "NA",
+                             umi.decode(),
+                             counts[umi],
+                             top_umi.decode(),
+                             group_count,
+                             unique_id] +
+                            ([cell.decode()] if options.per_cell else [])))))
 
                     nOutput += 1
 

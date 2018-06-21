@@ -1,6 +1,13 @@
 language: python
 sudo: required
 
+env:
+    global:
+        # 1. Generated a token for travis at https://anaconda.org/quantopian/settings/access with scope conda.
+        # 2. Generated secure env var below with travis gem via
+        #     $ travis encrypt ANACONDA_TOKEN=$TOKEN
+        secure: CqKVZgfLnKb3dyPOTLc3zUcl4OneuyscO5bQTYIwE2XI0GT+cpmH60IGYTgDUJ1Dg6GwCDvEfd+w7ungu5yHARAzsdiALnupDzZk1NoxHOWulBbP59o3RZGU4JN8X/xd3vqHi3hMb9n9/uPcqEqV73VGiInmljy/teYb8GnHLGsBbrf1Wu6pKz6a/OtMIlQByknPest5IgpBkQEn5ohh3+FEHJCNaSKhyJ7VNSbRb+h5gqHpDwhaEuUpzL/KFplykLpVpytl+Je/fxWmVOjw6j5mSyfUhNUZvxieF6+tV/glWf6/ZCBdKDR6Gg+nitLNjmtwQTptYB2LntiICfNBOvAEa1ZKKnSShPgtFkIYSQlbIHbW4NrRd3YCDldDEwfTQq45KydxQtlp4UDhJ0ZruwtDg9y3Aq1epVtiw2WmxCkcP0rMJmTqciW/WNASiiSEc7bxblTheH3Sorj+PkAKjiT+yMj5HEUr8zmqeAKt8aEPrzIY3uruuYeKpQLQ0orgXEAAzez37jHWDJBXZRLSL5DN4e5y0CK8yPzSLEIHyUYAjE9rRRxrUFFvoqc5SMl/MOlRKyE55+DJ8HpoI+x4R4T3o6ggBx6oSt9/Ls5nMjTddK1GiNHk/Bn4LJtuXFexs9W/EjDpCQRhWUdZDVS7VL+bBSlomA9LAp2XR7UiqTw=
+
 matrix:
     include:
         - os: osx
@@ -13,30 +20,25 @@ matrix:
         - os: linux
           sudo: required
           python: 3.5
-          env: TEST_FUNCTIONALITY=1
+          env: TEST_FUNCTIONALITY=1 TEST_STYLE=1
         - os: linux
           sudo: required
-          python: 3.5
-          env: TEST_STYLE=1
+          python: 3.6
+          env: TEST_HELP=1
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/python/libexec/bin:$PATH"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install freetype; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install virtualenv; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then virtualenv venv -p python3; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source venv/bin/activate; fi
-  - pip install cython
-  - pip install pandas==0.19
-  - pip install scipy
+    - ./ci/install_conda.sh
+
 install:
-  - python setup.py install
+    - ./ci/build_package.sh
 
-before_script:
-  - pip install nose
-  - pip install pep8
-  - pip install pyyaml
+script:
+    - ./ci/test_package.sh
 
-script: 
-  - ./test_umi_tools.sh
+deploy:
+    - provider: script
+      skip_cleanup: true
+      on:
+          repo: Cibiv/UMI-Tools
+          tags: true
+      script: anaconda -u cibiv -t "$ANACONDA_TOKEN" upload conda-bld/**/umi_tools*.tar.bz2

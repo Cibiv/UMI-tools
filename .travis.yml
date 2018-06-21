@@ -41,4 +41,4 @@ deploy:
       on:
           repo: Cibiv/UMI-tools
           tags: true
-      script: anaconda -u cibiv -t "$ANACONDA_TOKEN" upload conda-bld/**/umi_tools*.tar.bz2
+      script: ./ci/deploy_package.sh

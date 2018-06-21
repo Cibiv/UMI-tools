@@ -35,4 +35,7 @@ conda create --no-default-packages -p "$DEPLOYENV" \
 conda activate "$DEPLOYENV"
 
 # Deploy
-anaconda -u cibiv -t "$ANACONDA_TOKEN" upload conda-bld/**/umi_tools*.tar.bz2
+anaconda -t "$ANACONDA_TOKEN" upload \
+	-u cibiv -l main \
+	--no-progress \
+	conda-bld/**/umi_tools*.tar.bz2
